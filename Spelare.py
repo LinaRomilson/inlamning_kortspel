@@ -8,9 +8,9 @@ class Spelarna:
         # Metod för att dra ett slumpmässigt kort från kortleken
         kort = kortlek.dra_kort()
         if kort != "Tom kortlek":
-            # Överstiger poängen 21 när 14 poäng läggs till ska A vara värt 1 poäng istället
+            """"# Överstiger poängen 21 när 14 poäng läggs till ska A vara värt 1 poäng istället
             if kort.endswith("A") and self.räkna_poäng() + 14 > 21:
-                kort = kort.replace("A", "1")
+                kort = kort.replace("A", "1")"""
             self.hand.append(kort)
             return kort
         else:
@@ -19,7 +19,7 @@ class Spelarna:
     def räkna_poäng(self):
         # Räkna poängen på korten spelarna har i handen
         poäng = 0
-
+        antal_ess = 0
         for kort in self.hand:
             värde = kort.split()[1]  # Hämtar kortets värde
             if värde in "K":
@@ -28,7 +28,15 @@ class Spelarna:
                 poäng += 12
             elif värde in "J":
                 poäng += 11
+            elif värde == "A":
+                poäng += 14  # Lägger till essets högsta värde till att börja med
+                antal_ess += 1
             else:
                 poäng += int(värde)
+
+        # Om poängen överstiger 21 och det finns ess i handen ändras essets värde till 1
+        while poäng > 21 and antal_ess > 0:
+            poäng -= 13
+            antal_ess -= 1
 
         return poäng

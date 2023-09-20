@@ -16,4 +16,12 @@ class Kortlek:
                 self.kort.append(f"{färg} {värde}")
 
     def blanda(self):
+        # Blanda kortleken
         random.shuffle(self.kort)
+
+    def dra_kort(self):
+        # Dra ett kort från kortleken, om den inte är tom
+        if len(self.kort) > 0:
+            return self.kort.pop()
+        else:
+            return "Tom kortlek"

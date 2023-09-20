@@ -1,7 +1,7 @@
 import random
 
 
-class Kortlek:
+class Kortleken:
     # Skapa kortleken
     def __init__(self):
         # Skapa en tom lista att placera korten i
@@ -18,6 +18,10 @@ class Kortlek:
     def blanda(self):
         # Blanda kortleken
         random.shuffle(self.kort)
+
+    def __len__(self):
+        # Returnera antalet kort i kortleken
+        return len(self.kort)
 
     def dra_kort(self):
         # Dra ett kort från kortleken, om den inte är tom

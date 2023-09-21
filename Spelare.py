@@ -8,9 +8,6 @@ class Spelarna:
         # Metod för att dra ett slumpmässigt kort från kortleken
         kort = kortlek.dra_kort()
         if kort != "Tom kortlek":
-            """"# Överstiger poängen 21 när 14 poäng läggs till ska A vara värt 1 poäng istället
-            if kort.endswith("A") and self.räkna_poäng() + 14 > 21:
-                kort = kort.replace("A", "1")"""
             self.hand.append(kort)
             return kort
         else:

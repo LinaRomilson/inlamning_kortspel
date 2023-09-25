@@ -3,16 +3,40 @@ from Spelare import Spelarna
 import os
 import time
 
+# Anpassad exception för tom input
+class TomInputException(Exception):
+    pass
 
-def main():
+# Funktion för att kontrollera om input är tom
+def kontrollera_input(data):
+    if not data:
+        # Är input tom skapas undantag
+        raise TomInputException('FEL: Input får inte vara tom.')
+
+def main(spelare_namn):
     # Skapa en kortlek och blanda den
     kortlek = Kortleken()
     kortlek.blanda()
 
-    # Skapa en spelare som användaren döper och en datorspelare
-    spelare_namn = input("Vad heter du? ")
+
+
+    while True:  # Om exception sker ska denna del upprepas
+        # Namnge spelaren om den inte redan har ett namn
+        if spelare_namn is None:
+            try:
+                spelare_namn = input("Vad heter du? ")
+            # Rensa mellanslag för att kontrollera att text finns i inputen
+                spelare_namn_utan_mellanslag = spelare_namn.replace(" ", "")
+                kontrollera_input(spelare_namn_utan_mellanslag)
+                break  # Avsluta evighetsloopen om input inte är tom
+
+            except TomInputException as e:
+                print(e)
+
+    # Skapa spelarna
     spelare = Spelarna(spelare_namn)
     dator = Spelarna("datorn")
+
 
     # Skapa en evig loop så att spelet fortsätter efter första draget
     while True:
@@ -37,17 +61,28 @@ def main():
         # Om vinnaren är hittad ska spelet avslutas
         if avslutat:
             break
+        while True:     # Om exception sker ska denna del upprepas
+            try:
+                spela_igen = input("Vill du dra ett kort till? (ja/nej) ")
+                # Rensa mellanslag för att kontrollera att text finns i inputen
+                spela_igen_utan_mellanslag = spela_igen.replace(" ", "")
+                kontrollera_input(spela_igen_utan_mellanslag)
+                break           # Avsluta evighetsloopen om input inte är tom
 
-        spela_igen = input("Vill du dra ett kort till? (ja/nej) ")
+            except TomInputException as e:
+                print(e)
+
         if spela_igen.lower() != "ja":
+            avslutat = True     # Avsluta om svaret är nej (inte ja)
             # Om datorn har mindre än 17 poäng, fortsätt dra kort
             while dator.räkna_poäng() < 17:
                 dator.dra_kort(kortlek)
-                time.sleep(2)   # Väntar 2 sekunder innan det går vidare
-                print(f"Datorns hand: {', '.join(dator.hand)} ({dator.räkna_poäng()} poäng)")
+                time.sleep(1)   # Väntar 1 sekunder innan det går vidare
+            #print(f"Datorns hand: {', '.join(dator.hand)} ({dator.räkna_poäng()} poäng)")
 
             # Kolla om någon har vunnit efter att datorn har dragit sina kort
             avslutat = avsluta_spelet(spelare_namn, spelare.räkna_poäng(), dator.räkna_poäng())
+
             # Avsluta om vinnaren är hittad
             if avslutat:
                 break
@@ -59,11 +94,9 @@ def main():
                 print(f"{spelare_namn} vann! (Datorns poäng: {dator.räkna_poäng()} {spelare_namn}s poäng: {spelare.räkna_poäng()})")
                 break
 
-            # Avsluta loopen om spelaren inte vill dra fler kort
-            #break
         else:
             print("-" * 10 + "Nästa omgång" + "-" * 10)
-
+    return spelare_namn
 
 # Metod för att eventuellt avsluta spelet om någon spelare har vunnit
 def avsluta_spelet(spelare_namn, spelare_poäng, dator_poäng):
@@ -71,22 +104,30 @@ def avsluta_spelet(spelare_namn, spelare_poäng, dator_poäng):
         print("Datorn vann! Nästa gång tar du det", spelare_namn)
         return True
     elif spelare_poäng == 21:
-        print(f"{spelare_namn} vinner med exakt 21 poäng!")
+        print(f"{spelare_namn} vann med exakt 21 poäng!")
         return True
     elif dator_poäng == 21:
-        print("Datorn vinner med exakt 21 poäng!")
+        print("Datorn vann med exakt 21 poäng!")
         return True
     elif spelare_poäng > 21 and dator_poäng > 21:
         print("Det blev lika (båda har över 21)!")
         return True
     elif spelare_poäng > 21:
-        print(f"Datorn vann! ({spelare_namn} har över 21)")
+        print(f"Datorn vann med {dator_poäng} poäng! ({spelare_namn} har över 21)")
         return True
     elif dator_poäng > 21:
-        print(f"{spelare_namn} vinner! (Datorn har över 21)")
+        print(f"{spelare_namn} vann med {spelare_poäng} poäng! (Datorn har över 21)")
         return True
     return False
 
 
 if __name__ == "__main__":
-    main()
+    # Startvärde på spelarens namn, för att det ska gå att spela igen utan att ange sitt namn igen
+    spelare_namn = None
+    while True:
+        main(spelare_namn)
+        # Fråga om spelaren vill spela igen
+        SpelaIgen = input("Vill du spela igen? (ja/nej)")
+        # Om svaret är nej ska programmet avslutas
+        if SpelaIgen.lower() == "nej":
+            break
